@@ -69,7 +69,7 @@ mon_backtrace(int argc, char **argv, struct Trapframe *tf)
 
     while (rbp) {
         rip = rbp + 1;
-		cprintf("rbp %016x  rip %016x\n", *rbp, *rip);
+		cprintf("rbp %016x  rip %016x\n", rbp, *rip);
 		rbp = (uint64_t*) *rbp;
     }
 
