@@ -1,17 +1,17 @@
-#advanced os labs-fall 2021
+# Advanced OS labs-fall 2021
 
-# Useful Links
+## Useful Links
 - [x86 Architecture](https://en.wikibooks.org/wiki/X86_Assembly/X86_Architecture)
 - [x86 Instruction](https://en.wikibooks.org/wiki/X86_Assembly/X86_Instructions)
 - [GDB cheat-sheat](https://cs.brown.edu/courses/cs033/docs/guides/gdb.pdf)
 - [Inilne Assembly](https://www.ibiblio.org/gferg/ldp/GCC-Inline-Assembly-HOWTO.html)
 
-# Useful Books
+## Useful Books
 - RHEL 3, Using as, the Gnu Assembler
 
-# Useful Notes
+## Useful Notes
 
-## Keyboard Controller
+### Keyboard Controller
 Refrences: https://stanislavs.org/helppc/8042.html
 
     `0x64` is the IO port of the `keyboard controller` which has two ports `0x64(Command port)` and `0x60(Data port)`,
