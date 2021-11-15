@@ -29,6 +29,66 @@ Refrences: https://stanislavs.org/helppc/8042.html
 	 | `---------- 1=receive timeout (data transmit not complete)
 	 `----------- 1=even parity rec'd, 0=odd parity rec'd (should be odd)
 
+## Chalanges
 
+### Lab 1 Chalange
 
+Format of writing to vga port is like:
+| blank | background color |  Foreground color | Code Point |
+| :-----: | :----------------: | :-----------------: | :-----------: |
+| 8 | 7 6 5 4 | 3 2 1 0 | 7 6 5 4 3 2 1 0 | 
 
+you can see in `cga_putc` in `console.h` function if no attribute color is set in the input argument it setting the foreground color to `white` (7) and bakcground color to `black` (0):
+
+```c
+static void
+cga_putc(int c)
+{
+	if (!(c & ~0xFF))
+		c |= 0x0700;
+	.
+	.
+	.
+}
+
+```
+
+so some how we must set the attribute bytes in `lib/printfmt.c`:
+
+```c
+void
+vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap)
+{
+...
+	while ((ch = *(unsigned char *) fmt++) != '%') {
+		if (ch == '\0') {
+			color = 0;
+			return;
+		}
+		ch |= color << 8;
+		putch(ch, putdat);
+	}
+...
+        case 'r':
+		color = getuint(&aq, 1);
+		break;
+
+...
+}
+```
+
+you can see from the above code you can see attribute byte with `%r` in cprintf, for example we have changed the code in `monitor.c`:
+```c
+void
+monitor(struct Trapframe *tf)
+{
+...
+	cprintf("%r Welcome to the JOS kernel monitor!\n", 2);
+	cprintf("%r Type 'help' for a list of commands.\n", 4);
+...
+}
+```
+
+The first statement is printing in green color and the second one is printing in red.
+
+![image](./img/color.png)
