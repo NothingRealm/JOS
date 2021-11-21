@@ -100,7 +100,9 @@ vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap)
                 color = 0;
 				return;
             }
+
             ch |= color << 8;
+
 			putch(ch, putdat);
 		}
 
@@ -215,7 +217,7 @@ vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap)
 			// (unsigned) octal
 		case 'o':
 			// Replace this with your code.
-			num = getuint(&aq, 3);
+            num = getuint(&aq, 3);
 			base = 8;
 			goto number;
 			break;
@@ -242,11 +244,11 @@ vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap)
 			putch(ch, putdat);
 			break;
 
+			// unrecognized escape sequence - just print it literally
         case 'r':
 			color = getuint(&aq, 1);
             break;
 
-			// unrecognized escape sequence - just print it literally
 		default:
 			putch('%', putdat);
 			for (fmt--; fmt[-1] != '%'; fmt--)

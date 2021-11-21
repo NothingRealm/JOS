@@ -26,7 +26,7 @@ struct Command {
 static struct Command commands[] = {
 	{ "help", "Display this list of commands", mon_help },
 	{ "kerninfo", "Display information about the kernel", mon_kerninfo },
-	{ "backtrace", "Display the stack backtrace", mon_backtrace },
+    { "backtrace", "Display the stack backtrace", mon_backtrace },
 };
 #define NCOMMANDS (sizeof(commands)/sizeof(commands[0]))
 
@@ -62,7 +62,6 @@ int
 mon_backtrace(int argc, char **argv, struct Trapframe *tf)
 {
     backtrace();
-
 	return 0;
 }
 
@@ -107,6 +106,7 @@ backtrace() {
 	return 0;
 
 }
+
 
 
 /***** Kernel monitor command interpreter *****/
@@ -157,10 +157,8 @@ void
 monitor(struct Trapframe *tf)
 {
 	char *buf;
-
 	cprintf("%r Welcome to the JOS kernel monitor!\n", 2);
 	cprintf("%r Type 'help' for a list of commands.\n", 4);
-
 
 	while (1) {
 		buf = readline("K> ");
