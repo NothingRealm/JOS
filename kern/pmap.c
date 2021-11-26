@@ -479,10 +479,11 @@ pml4e_walk(pml4e_t *pml4e, const void *va, int create)
     PageInfo *page;
     pdpe_t *pdpe;
     pte_t *pte;
+    bool is_new_page;
 
     current_pml4 = &pml4e[PML4(va)];
 
-    if (!(pdpe & PTE_P) && create) {
+    if (!(*current_pml4 & PTE_P) && create) {
         page = page_alloc(ALLOC_ZERO);
         page->pp_ref = 1;
 
@@ -492,15 +493,16 @@ pml4e_walk(pml4e_t *pml4e, const void *va, int create)
         *current_pml4 = page2pa(page);
         *current_pml4 |= PTE_AVAIL | PTE_P | PTE_W | PTE_U;
 
-    } else if(!pdpe && !create) {
+        is_new_page = true;
+    } else if(!(*current_pml4 & PTE_P) && !create) {
         return NULL;
     }
 
-    pdpe = KADDR(*current_pml4 & ~0XFFF);
+    pdpe = KADDR(*current_pml4 & ~0xFFF);
 
     pte = pdpe_walk(pdpe, va, create);
 
-    if (!pte && create) {
+    if (!pte && is_new_page) {
         page->pp_ref = 0;
         page_free(page);
         *current_pml4 = 0;
@@ -515,9 +517,40 @@ pml4e_walk(pml4e_t *pml4e, const void *va, int create)
 // It calls the pgdir_walk which returns the page_table entry pointer.
 // Hints are the same as in pml4e_walk
 pte_t *
-pdpe_walk(pdpe_t *pdpe,const void *va,int create){
+pdpe_walk(pdpe_t *pdpe, const void *va, int create){
+    pdpe_t *current_pdpe;
+    pde_t *pgdir;
+    pte_t *pte;
+    bool is_new_page;
 
-	return NULL;
+    current_pdpe = &pdpe[PDPE[va]];
+
+    if (!(*current_pdpe & PTE_P) && create) {
+        page = page_alloc(ALLOC_ZERO);
+        page->pp_ref = 1;
+
+        if (!page)
+            return NULL;
+
+        *current_pdpe = page2pa(page);
+        *current_pdpe |= PTE_AVAIL | PTE_P | PTE_W | PTE_U;
+
+        is_new_page = true;
+    } else if (!(*current_pdpe & PTE_P) && !create) {
+        return NULL;
+    }
+
+    pgdir = KADDR(*current_pdpe & ~0xFFF);
+
+    pte = pgdir_walk(pgdir, va, create);
+
+    if (!pte && is_new_page) {
+        page->pp_ref = 0;
+        page_free(page);
+        *current_pdpe = 0;
+    }
+
+	return pte;
 }
 // Given 'pgdir', a pointer to a page directory, pgdir_walk returns
 // a pointer to the page table entry (PTE) in the final page table. 
