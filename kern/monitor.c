@@ -12,6 +12,7 @@
 #include <kern/dwarf.h>
 #include <kern/kdebug.h>
 #include <kern/dwarf_api.h>
+#include <kern/trap.h>
 
 #define CMDBUF_SIZE	80	// enough for one VGA text line
 
@@ -61,12 +62,12 @@ mon_kerninfo(int argc, char **argv, struct Trapframe *tf)
 int
 mon_backtrace(int argc, char **argv, struct Trapframe *tf)
 {
-    backtrace();
+    btrace();
 	return 0;
 }
 
 int
-backtrace() {
+btrace() {
     int i;
     uint64_t *rbp;
     uint64_t *rip;
@@ -159,6 +160,9 @@ monitor(struct Trapframe *tf)
 	char *buf;
 	cprintf("%r Welcome to the JOS kernel monitor!\n", 2);
 	cprintf("%r Type 'help' for a list of commands.\n", 4);
+
+	if (tf != NULL)
+		print_trapframe(tf);
 
 	while (1) {
 		buf = readline("K> ");
