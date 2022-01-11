@@ -375,7 +375,40 @@ load_icode(struct Env *e, uint8_t *binary)
 	// at virtual address USTACKTOP - PGSIZE.
 
 	// LAB 3: Your code here.
+    int i;
+    void *p_va;
+    size_t p_memsz;
+    size_t p_filesz;
+    struct Elf *elf;
+    struct Proghdr *begin;
+    struct Proghdr *program_header;
+
+    region_alloc(e, (void *)(USTACKTOP - PGSIZE), PGSIZE);
+
 	e->elf = binary;
+    elf = (struct Elf *) binary;
+    begin = (struct Proghdr *) (elf->e_phoff + binary);
+
+    lcr3(e->env_cr3);
+
+    for (i = 0; i < elf->e_phnum; i++) {
+        program_header = begin + i;
+
+        if (program_header->p_type == ELF_PROG_LOAD) {
+            p_va = (void *) program_header->p_va;
+            p_memsz = program_header->p_memsz;
+            p_filesz = program_header->p_filesz;
+
+            region_alloc(e, p_va, p_memsz);
+            memmove(p_va, (void *)binary + program_header->p_offset, p_filesz);
+            memset(p_va + p_filesz, 0, p_memsz - p_filesz);
+        }
+
+    }
+
+    lcr3(boot_cr3);
+
+    e->env_tf.tf_rip = elf->e_entry;
 }
 
 //
