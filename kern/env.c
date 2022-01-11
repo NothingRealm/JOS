@@ -422,6 +422,15 @@ void
 env_create(uint8_t *binary, enum EnvType type)
 {
 	// LAB 3: Your code here.
+    struct Env *env;
+    int err;
+    
+    err = env_alloc(&env, 0);
+    if (err < 0) {
+        panic("env_create: Could not allocate en %e", e);
+    }
+
+    env->env_type = type;
 }
 
 //
