@@ -427,7 +427,7 @@ env_create(uint8_t *binary, enum EnvType type)
     
     err = env_alloc(&env, 0);
     if (err < 0) {
-        panic("env_create: Could not allocate en %e", e);
+        panic("env_create: Could not allocate en %e", err);
     }
 
     env->env_type = type;
@@ -568,7 +568,15 @@ env_run(struct Env *e)
 	//	e->env_tf to sensible values.
 
 	// LAB 3: Your code here.
+    if (curenv && curenv->env_status == ENV_RUNNING) {
+        curenv->env_status = ENV_RUNNABLE;
+    }
 
-	panic("env_run not yet implemented");
+    curenv = e;
+    curenv->env_status = ENV_RUNNING;
+    curenv->env_runs++;
+
+    lcr3(curenv->env_cr3);
+    env_pop_tf(&curenv->env_tf);
 }
 
