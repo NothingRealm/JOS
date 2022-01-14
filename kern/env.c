@@ -122,7 +122,7 @@ env_init(void)
 	// LAB 3: Your code here.
     int i;
 
-    for (i = 0; i < NENV; i++) {
+    for (i = 0; i < NENV - 1; i++) {
         envs[i].env_link = &envs[i + 1];
         envs[i].env_status = ENV_FREE;
         envs[i].env_id = 0;
@@ -300,7 +300,7 @@ region_alloc(struct Env *e, void *va, size_t len)
     int err;
 
     begin = ROUNDDOWN(va, PGSIZE);
-    end = ROUNDUP(va, PGSIZE);
+    end = ROUNDUP(va + len, PGSIZE);
 
     while(begin < end) {
         page = page_alloc(ALLOC_ZERO);
@@ -383,13 +383,13 @@ load_icode(struct Env *e, uint8_t *binary)
     struct Proghdr *begin;
     struct Proghdr *program_header;
 
-    region_alloc(e, (void *)(USTACKTOP - PGSIZE), PGSIZE);
 
 	e->elf = binary;
     elf = (struct Elf *) binary;
     begin = (struct Proghdr *) (elf->e_phoff + binary);
 
     lcr3(e->env_cr3);
+    region_alloc(e, (void *)(USTACKTOP - PGSIZE), PGSIZE);
 
     for (i = 0; i < elf->e_phnum; i++) {
         program_header = begin + i;
@@ -430,6 +430,7 @@ env_create(uint8_t *binary, enum EnvType type)
         panic("env_create: Could not allocate en %e", err);
     }
 
+	load_icode(env, binary);
     env->env_type = type;
 }
 
