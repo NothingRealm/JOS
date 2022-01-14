@@ -182,6 +182,13 @@ trap_dispatch(struct Trapframe *tf)
         return;
     }
 
+	if (tf->tf_trapno == T_SYSCALL) {
+        tf->tf_regs.reg_rax = syscall(tf->tf_regs.reg_rax, tf->tf_regs.reg_rdx,
+			tf->tf_regs.reg_rcx, tf->tf_regs.reg_rbx, tf->tf_regs.reg_rdi,
+            tf->tf_regs.reg_rsi);
+        return;
+    }
+
 	if (tf->tf_cs == GD_KT)
 		panic("unhandled trap in kernel");
 	else {
