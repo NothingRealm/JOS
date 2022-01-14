@@ -177,6 +177,11 @@ trap_dispatch(struct Trapframe *tf)
         return;
     }
 
+    if (tf->tf_trapno == T_BRKPT) {
+        breakpoint_handler(tf);
+        return;
+    }
+
 	if (tf->tf_cs == GD_KT)
 		panic("unhandled trap in kernel");
 	else {
@@ -248,5 +253,11 @@ page_fault_handler(struct Trapframe *tf)
 		curenv->env_id, fault_va, tf->tf_rip);
 	print_trapframe(tf);
 	env_destroy(curenv);
+}
+
+void
+breakpoint_handler(struct Trapframe *tf) {
+    monitor(tf);
+    return;
 }
 
