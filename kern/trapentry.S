@@ -5,6 +5,7 @@
 #include <inc/trap.h>
 #include <kern/macro.h>
 
+#include <kern/picirq.h>
 
 
 ###################################################################
@@ -21,7 +22,6 @@
  *   void NAME();
  * where NAME is the argument passed to TRAPHANDLER.
  */
-
 #define TRAPHANDLER(name, num)						\
 	.globl name;		/* define global symbol for 'name' */	\
 	.type name, @function;	/* symbol type is function */		\
@@ -34,7 +34,6 @@
  * It pushes a 0 in place of the error code, so the trap frame has the same
  * format in either case.
  */
-
 #define TRAPHANDLER_NOEC(name, num)					\
 	.globl name;							\
 	.type name, @function;						\
