@@ -425,6 +425,11 @@ page_init(void)
         pages[i].pp_link = page_free_list;
         page_free_list = &pages[i];
     }
+
+    i = PPN(MPENTRY_PADDR);
+    pages[i].pp_ref = 1;
+    pages[i + 1].pp_link = pages[i].pp_link;
+    pages[i].pp_link = NULL;
 }
 
 //
