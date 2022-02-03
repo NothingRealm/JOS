@@ -848,7 +848,7 @@ mmio_map_region(physaddr_t pa, size_t size)
     boot_map_region(boot_pml4e, base, size, pa, PTE_W | PTE_PCD | PTE_PWT);
     base += size;
 
-    return (void *) base;
+    return (void *) base - size;
 }
 
 static uintptr_t user_mem_check_addr;
