@@ -389,6 +389,9 @@ page_fault_handler(struct Trapframe *tf)
 	user_mem_assert(curenv, (void *)(tf->tf_rsp), sizeof(struct UTrapframe),
 					PTE_P | PTE_W | PTE_U);
 
+	user_mem_assert(curenv, (void *)(curenv->env_pgfault_upcall), 8,
+					PTE_P | PTE_U);
+
     *(struct UTrapframe *)(tf->tf_rsp) = utf;
 
     tf->tf_rip = (uintptr_t) curenv->env_pgfault_upcall;
