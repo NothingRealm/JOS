@@ -77,7 +77,7 @@ duppage(envid_t envid, unsigned pn)
     void *va;
 
     pte = uvpt[pn];
-    va = (void *) (pte * PGSIZE);
+    va = (void *) ((uintptr_t) pn * PGSIZE);
 
     perm = pte & PTE_SYSCALL;
 
