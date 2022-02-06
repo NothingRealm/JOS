@@ -386,7 +386,7 @@ sys_ipc_try_send(envid_t envid, uint32_t value, void *srcva, unsigned perm)
     }
 
 
-	if(!srcva || (srcva > (void*) UTOP) || !recvr->env_ipc_dstva || recvr->env_ipc_dstva > (void*) UTOP) {
+	if(!srcva || (srcva >= (void*) UTOP) || !recvr->env_ipc_dstva || recvr->env_ipc_dstva >= (void*) UTOP) {
         recvr->env_ipc_perm = 0;
         recvr->env_ipc_value = value;
         recvr->env_ipc_recving = 0;
@@ -449,13 +449,11 @@ sys_ipc_recv(void *dstva)
 	curenv->env_ipc_recving = 1;
 	curenv->env_ipc_dstva = dstva;
 	curenv->env_status = ENV_NOT_RUNNABLE;
+	curenv->env_tf.tf_regs.reg_rax = 0;
 	sched_yield();
 
 	return 0;
 }
-
-
-
 
 
 // Dispatches to the correct kernel function, passing the arguments.
