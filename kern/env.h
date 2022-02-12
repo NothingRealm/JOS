@@ -8,7 +8,6 @@
 
 extern struct Env *envs;		// All environments
 #define curenv (thiscpu->cpu_env)		// Current environment
-
 extern struct Segdesc gdt[];
 
 void	env_init(void);

@@ -245,7 +245,7 @@ x64_vm_init(void)
 	int r;
 	struct Env *env;
 	i386_detect_memory();
-//	panic("i386_vm_init: This function is not finished\n");
+	//panic("i386_vm_init: This function is not finished\n");
 	//////////////////////////////////////////////////////////////////////
 	// create initial page directory.
 	pml4e = boot_alloc(PGSIZE);
@@ -913,6 +913,7 @@ user_mem_assert(struct Env *env, const void *va, size_t len, int perm)
 		env_destroy(env);	// may not return
 	}
 }
+
 
 // --------------------------------------------------------------
 // Checking functions.
