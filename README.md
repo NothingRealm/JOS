@@ -1,4 +1,4 @@
-# Advanced OS labs-fall 2021
+# JOS
 
 ## Useful Links
 - [x86 Architecture](https://en.wikibooks.org/wiki/X86_Assembly/X86_Architecture)
