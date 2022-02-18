@@ -60,23 +60,13 @@ alloc_block(void)
 	// contains the in-use bits for BLKBITSIZE blocks.  There are
 	// super->s_nblocks blocks in the disk altogether.
     uint32_t i;
-    uint32_t j;
-    uint32_t blockno;
-    uint32_t max = -1;
 
-	// LAB 5: Your code here.
-    for (i = 2; i < super->s_nblocks / 32; i++) {
-        if (bitmap[i] == max) {
-            continue;
-        }
+    for (i = 2; i < super->s_nblocks ; i++) {
 
-        for (j = 0; j < 32; j++) {
-            blockno = i * 32 + j;
-            if (block_is_free(blockno)) {
-				bitmap[i] &= ~(1 << (blockno % 32));
-				flush_block((void*)bitmap);
-				return blockno; 
-            }
+        if (block_is_free(i)) {
+            bitmap[i / 32] &= ~(1 << (i % 32));
+            flush_block((void*)bitmap);
+            return i; 
         }
 
     }
@@ -195,6 +185,7 @@ file_get_block(struct File *f, uint32_t filebno, char **blk)
 {
 	// LAB 5: Your code here.
     int err;
+    uint32_t blockno;
 
 	if (filebno >= NDIRECT + NINDIRECT) {
 		return -E_INVAL;
@@ -208,7 +199,13 @@ file_get_block(struct File *f, uint32_t filebno, char **blk)
     }
 
     if (!*ppdiskbno) {
-        return -E_NO_DISK;
+		blockno = alloc_block();
+		
+		if (blockno < 0) {
+			return -E_NO_DISK;
+		}
+		
+		*ppdiskbno = blockno;
     }
 
 	*blk = (char*) diskaddr(*ppdiskbno);
